@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy 20th Birthday!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0518 0%, #2d0b4e 40%, #1a0a2e 70%, #0d0221 100%);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        #floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .title-section {
+            text-align: center;
+            margin-bottom: 10px;
+            z-index: 10;
+            position: relative;
+        }
+        .title-section h1 {
+            font-size: 3.2rem;
+            color: #ffd700;
+            text-shadow: 0 0 30px #ff6b9d, 0 0 60px #ff6b9d, 0 0 90px rgba(255,107,157,0.4);
+            margin: 0;
+            animation: floatTitle 3s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+        .title-section p {
+            font-size: 1.3rem;
+            color: #ffb6c1;
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        #blow-counter {
+            font-size: 1.1rem;
+            color: #ffd700;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        #volume-bar-container {
+            width: 200px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 10px auto;
+            overflow: hidden;
+            display: none;
+        }
+        #volume-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b9d, #ffd700);
+            border-radius: 10px;
+            transition: width 0.05s ease;
+        }
+        #mic-status {
+            font-size: 0.9rem;
+            color: #ff6b9d;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+        #cake-container {
+            position: relative;
+            z-index: 5;
+            transform: scale(0.85);
+        }
+        .cake {
+            position: relative;
+            width: 360px;
+            height: 320px;
+        }
+        .plate {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 420px;
+            height: 50px;
+            background: radial-gradient(ellipse at center, #f8f8f8 0%, #e0e0e0 50%, #b0b0b0 100%);
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 -5px 15px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        .plate-inner {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 40px;
+            background: radial-gradient(ellipse at center, #ffffff 0%, #f0f0f0 60%, #d0d0d0 100%);
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 0.8;
+        }
+        .tier-bottom {
+            position: absolute;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 110px;
+            background: linear-gradient(to bottom, #f5e6d3 0%, #e8d5c0 20%, #d4c4a8 60%, #c4b498 100%);
+            border-radius: 12px 12px 25px 25px;
+            box-shadow: inset -25px 0 40px rgba(0,0,0,0.12), 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+        .tier-bottom-border {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30px;
+            background: repeating-linear-gradient(90deg, #ff9ecd 0px, #ff9ecd 15px, #ffb6d9 15px, #ffb6d9 30px);
+            border-radius: 0 0 25px 25px;
+            opacity: 0.85;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .tier-bottom-ribbon {
+            position: absolute;
+            top: 35px;
+            width: 100%;
+            height: 18px;
+            background: linear-gradient(90deg, #ff6b9d, #ff8fab, #ff6b9d, #ff8fab);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.3);
+        }
+        .ribbon-bow {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ff6b9d, #ff1493);
+            border-radius: 0 50% 50% 50%;
+            transform: translateX(-50%) rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+        .tier-top {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 230px;
+            height: 90px;
+            background: linear-gradient(to bottom, #fff5f8 0%, #ffe4e1 30%, #ffd1dc 60%, #ffc0cb 100%);
+            border-radius: 12px 12px 18px 18px;
+            box-shadow: inset -18px 0 30px rgba(0,0,0,0.08), 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+        .tier-top-border {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 22px;
+            background: repeating-linear-gradient(90deg, #ffd1dc 0px, #ffd1dc 12px, #ffb6c1 12px, #ffb6c1 24px);
+            border-radius: 0 0 18px 18px;
+            opacity: 0.75;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .drip {
+            position: absolute;
+            background: linear-gradient(to bottom, #fff5f8, #ffe4e1);
+            opacity: 0.95;
+        }
+        .frosting-swirls {
+            position: absolute;
+            bottom: 225px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 20px;
+            z-index: 4;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+        .swirl {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15), inset -2px -2px 4px rgba(0,0,0,0.1);
+        }
+        .twenty-plaque {
+            position: absolute;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+        .twenty-circle {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffec8b 40%, #ffd700 70%, #daa520 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), inset 0 -3px 8px rgba(0,0,0,0.1), inset 0 3px 8px rgba(255,255,255,0.5);
+            border: 3px solid #daa520;
+        }
+        .twenty-circle span {
+            font-size: 32px;
+            font-weight: 900;
+            color: #8b4513;
+            font-family: 'Arial Black', 'Impact', sans-serif;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5), -1px -1px 1px rgba(0,0,0,0.1);
+        }
+        .twenty-shadow {
+            width: 80px;
+            height: 10px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, transparent 70%);
+            margin-top: -5px;
+        }
+        #candles-container {
+            position: absolute;
+            bottom: 235px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 70px;
+            z-index: 5;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+        .candle-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .flame {
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transform-origin: bottom center;
+            position: relative;
+        }
+        .flame-inner {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 5px;
+            height: 8px;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.9) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .flame-inner-large {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 6px;
+            height: 10px;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.95) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .candle-body-pink {
+            width: 10px;
+            height: 55px;
+            background: linear-gradient(90deg, #ff6b9d, #ff8fab, #ffb6c1, #ff8fab, #ff6b9d);
+            border-radius: 3px;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .candle-body-purple {
+            width: 10px;
+            height: 55px;
+            background: linear-gradient(90deg, #9b59b6, #bb8fce, #d2b4de, #bb8fce, #9b59b6);
+            border-radius: 3px;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .candle-body-blue {
+            width: 10px;
+            height: 55px;
+            background: linear-gradient(90deg, #3498db, #85c1e9, #aed6f1, #85c1e9, #3498db);
+            border-radius: 3px;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .candle-body-tall {
+            width: 12px;
+            height: 65px;
+            background: linear-gradient(90deg, #ff6b9d, #ff8fab, #ffb6c1, #ff8fab, #ff6b9d);
+            border-radius: 3px;
+            box-shadow: inset -3px 0 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .candle-base {
+            border-radius: 3px;
+            margin-top: -2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        #smoke-container {
+            position: absolute;
+            bottom: 290px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 120px;
+            pointer-events: none;
+            z-index: 6;
+        }
+        #mic-btn {
+            margin-top: 30px;
+            padding: 16px 45px;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, #ff6b9d, #ff8fab);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255,107,157,0.5);
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        #mic-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 35px rgba(255,107,157,0.7);
+        }
+        #mic-btn:active {
+            transform: translateY(1px);
+        }
+        #mic-btn.listening {
+            background: linear-gradient(135deg, #ff1493, #ff6b9d);
+            animation: pulseBtn 1.5s infinite;
+        }
+        #mic-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #celebration {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+        }
+        #celebration h2 {
+            font-size: 4.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 40px #ff6b9d, 0 0 80px #ff6b9d, 0 0 120px rgba(255,107,157,0.5);
+            animation: popIn 0.8s ease-out;
+            margin: 0;
+        }
+        #celebration p {
+            font-size: 1.8rem;
+            color: #ffb6c1;
+            margin-top: 25px;
+            text-shadow: 0 0 20px rgba(255,182,193,0.5);
+        }
+        #confetti-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            overflow: hidden;
+        }
+        #insecure-banner {
+            display: none;
+            position: relative;
+            z-index: 30;
+            max-width: 320px;
+            margin: 0 auto 14px auto;
+            padding: 12px 16px;
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid #ff6666;
+            border-radius: 10px;
+            color: #ffb3b3;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            text-align: center;
+        }
+        #insecure-banner a {
+            color: #ffd700;
+        }
+        #tap-fallback {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            color: white;
+            background: linear-gradient(135deg, #9b59b6, #bb8fce);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1) rotate(-2deg) skewX(-1deg); opacity: 1; }
+            20% { transform: scale(1.08) rotate(2deg) skewX(1deg); opacity: 0.92; }
+            40% { transform: scale(0.96) rotate(-1deg) skewX(-0.5deg); opacity: 1; }
+            60% { transform: scale(1.05) rotate(1.5deg) skewX(0.8deg); opacity: 0.95; }
+            80% { transform: scale(0.98) rotate(-0.5deg) skewX(-0.3deg); opacity: 0.98; }
+            100% { transform: scale(1) rotate(0deg) skewX(0deg); opacity: 1; }
+        }
+        @keyframes floatTitle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes smokeRise {
+            0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.7; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-100px) scale(3) rotate(20deg); opacity: 0; }
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+        @keyframes heartFloat {
+            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+        @keyframes pulseBtn {
+            0%, 100% { box-shadow: 0 5px 25px rgba(255,20,147,0.5); }
+            50% { box-shadow: 0 5px 40px rgba(255,20,147,0.8); }
+        }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 25px #ff9500, 0 0 50px #ff4500; }
+            50% { box-shadow: 0 0 35px #ff9500, 0 0 70px #ff4500, 0 0 100px rgba(255,69,0,0.3); }
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div id="stars"></div>
+    <div id="floating-hearts"></div>
+
+    <div class="title-section">
+        <h1>Happy 20th Birthday!</h1>
+        <p>🎤 Blow into your microphone to make a wish...</p>
+        <p id="blow-counter">Blows needed: 4</p>
+        <div id="volume-bar-container">
+            <div id="volume-bar"></div>
+        </div>
+        <p id="mic-status"></p>
+        <div id="insecure-banner"></div>
+    </div>
+
+    <div id="cake-container">
+        <div class="cake">
+            <div class="plate"></div>
+            <div class="plate-inner"></div>
+
+            <div class="tier-bottom">
+                <div class="tier-bottom-border"></div>
+                <div class="tier-bottom-ribbon"></div>
+                <div class="ribbon-bow"></div>
+                <div style="position: absolute; top: 15px; left: 20px; width: 6px; height: 6px; background: rgba(255,182,193,0.4); border-radius: 50%;"></div>
+                <div style="position: absolute; top: 25px; left: 60px; width: 5px; height: 5px; background: rgba(255,182,193,0.3); border-radius: 50%;"></div>
+                <div style="position: absolute; top: 18px; right: 40px; width: 7px; height: 7px; background: rgba(255,182,193,0.35); border-radius: 50%;"></div>
+                <div style="position: absolute; top: 40px; left: 100px; width: 4px; height: 4px; background: rgba(255,182,193,0.3); border-radius: 50%;"></div>
+            </div>
+
+            <div class="tier-top">
+                <div class="tier-top-border"></div>
+                <div class="drip" style="top: -10px; left: 15px; width: 18px; height: 30px; border-radius: 0 0 12px 12px; box-shadow: 1px 2px 4px rgba(0,0,0,0.05);"></div>
+                <div class="drip" style="top: -6px; left: 55px; width: 14px; height: 22px; border-radius: 0 0 10px 10px;"></div>
+                <div class="drip" style="top: -12px; left: 100px; width: 22px; height: 35px; border-radius: 0 0 14px 14px; box-shadow: 1px 2px 4px rgba(0,0,0,0.05);"></div>
+                <div class="drip" style="top: -8px; left: 155px; width: 16px; height: 26px; border-radius: 0 0 11px 11px;"></div>
+                <div class="drip" style="top: -5px; left: 200px; width: 12px; height: 18px; border-radius: 0 0 8px 8px;"></div>
+            </div>
+
+            <div class="frosting-swirls">
+                <div class="swirl" style="width: 28px; height: 28px; transform: rotate(-20deg); background: radial-gradient(circle at 30% 30%, #ffc0cb 0%, #ff69b4 60%, #ff1493 100%);"></div>
+                <div class="swirl" style="width: 32px; height: 32px; transform: rotate(10deg); background: radial-gradient(circle at 30% 30%, #ffd1dc 0%, #ff69b4 60%, #ff1493 100%);"></div>
+                <div class="swirl" style="width: 30px; height: 30px; transform: rotate(-15deg); background: radial-gradient(circle at 30% 30%, #ffb6c1 0%, #ff1493 60%, #c71585 100%);"></div>
+                <div class="swirl" style="width: 28px; height: 28px; transform: rotate(20deg); background: radial-gradient(circle at 30% 30%, #ffc0cb 0%, #ff69b4 60%, #ff1493 100%);"></div>
+                <div class="swirl" style="width: 26px; height: 26px; transform: rotate(-5deg); background: radial-gradient(circle at 30% 30%, #ffb6c1 0%, #ff1493 60%, #c71585 100%);"></div>
+            </div>
+
+            <div class="twenty-plaque">
+                <div class="twenty-circle">
+                    <span>20</span>
+                </div>
+                <div class="twenty-shadow"></div>
+            </div>
+
+            <div id="candles-container">
+                <div class="candle-wrapper">
+                    <div class="flame" id="flame-1" style="width: 16px; height: 35px; background: radial-gradient(ellipse at 40% 30%, #ffffcc 0%, #fff700 15%, #ff9500 45%, #ff4500 75%, transparent 100%); box-shadow: 0 0 25px #ff9500, 0 0 50px #ff4500, 0 0 80px rgba(255,69,0,0.3), 0 -5px 20px rgba(255,215,0,0.4); animation: flicker 0.1s infinite alternate;">
+                        <div class="flame-inner"></div>
+                    </div>
+                    <div class="candle-body-pink"></div>
+                    <div class="candle-base" style="width: 12px; height: 5px; background: linear-gradient(90deg, #ff1493, #ff6b9d);"></div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="flame" id="flame-2" style="width: 16px; height: 35px; background: radial-gradient(ellipse at 40% 30%, #ffffcc 0%, #fff700 15%, #ff9500 45%, #ff4500 75%, transparent 100%); box-shadow: 0 0 25px #ff9500, 0 0 50px #ff4500, 0 0 80px rgba(255,69,0,0.3), 0 -5px 20px rgba(255,215,0,0.4); animation: flicker 0.15s infinite alternate;">
+                        <div class="flame-inner"></div>
+                    </div>
+                    <div class="candle-body-purple"></div>
+                    <div class="candle-base" style="width: 12px; height: 5px; background: linear-gradient(90deg, #8e44ad, #9b59b6);"></div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="flame" id="flame-3" style="width: 16px; height: 35px; background: radial-gradient(ellipse at 40% 30%, #ffffcc 0%, #fff700 15%, #ff9500 45%, #ff4500 75%, transparent 100%); box-shadow: 0 0 25px #ff9500, 0 0 50px #ff4500, 0 0 80px rgba(255,69,0,0.3), 0 -5px 20px rgba(255,215,0,0.4); animation: flicker 0.12s infinite alternate;">
+                        <div class="flame-inner"></div>
+                    </div>
+                    <div class="candle-body-blue"></div>
+                    <div class="candle-base" style="width: 12px; height: 5px; background: linear-gradient(90deg, #2980b9, #3498db);"></div>
+                </div>
+                <div class="candle-wrapper">
+                    <div class="flame" id="flame-4" style="width: 18px; height: 40px; background: radial-gradient(ellipse at 40% 30%, #ffffcc 0%, #fff700 15%, #ff9500 45%, #ff4500 75%, transparent 100%); box-shadow: 0 0 30px #ff9500, 0 0 60px #ff4500, 0 0 100px rgba(255,69,0,0.4), 0 -5px 25px rgba(255,215,0,0.5); animation: flicker 0.08s infinite alternate;">
+                        <div class="flame-inner-large"></div>
+                    </div>
+                    <div class="candle-body-tall"></div>
+                    <div class="candle-base" style="width: 14px; height: 5px; background: linear-gradient(90deg, #ff1493, #ff6b9d);"></div>
+                </div>
+            </div>
+
+            <div id="smoke-container"></div>
+        </div>
+    </div>
+
+    <button id="mic-btn" onclick="toggleMic()">
+        <span id="mic-icon">🎤</span>
+        <span id="mic-text">Enable Microphone</span>
+    </button>
+
+    <button id="tap-fallback" onclick="manualBlow()">🎂 Tap to blow out candles instead</button>
+
+    <div id="celebration">
+        <h2>🎉 Happy 20th! 🎂</h2>
+        <p>Your wish has been made! ✨</p>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script>
+        let blowCount = 0;
+        const maxBlows = 4;
+        let allBlown = false;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let dataArray = null;
+        let isListening = false;
+        let animationId = null;
+        let blowThreshold = 35;
+        let cooldown = false;
+
+        // --- Secure-context / mic-availability check ---
+        // getUserMedia is only available on HTTPS, localhost, or file:// in some browsers,
+        // but mobile Chrome specifically requires a secure context (https/localhost).
+        // If it's missing, show a clear banner and a tap-to-blow fallback instead of
+        // silently failing when the mic button is pressed.
+        function checkMicAvailability() {
+            const banner = document.getElementById('insecure-banner');
+            const micBtn = document.getElementById('mic-btn');
+            const tapFallback = document.getElementById('tap-fallback');
+
+            const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+            const isSecure = window.isSecureContext;
+
+            if (!hasMediaDevices || !isSecure) {
+                banner.style.display = 'block';
+                banner.innerHTML = !isSecure
+                    ? '⚠️ Microphone needs a secure connection (HTTPS). This page was opened over an insecure connection (e.g. a local file), so the browser is blocking mic access. Host this file on HTTPS (e.g. GitHub Pages, Netlify) to use the mic, or use the button below instead.'
+                    : '⚠️ Microphone access isn\'t supported in this browser. Use the button below instead.';
+                micBtn.disabled = true;
+                micBtn.style.opacity = '0.5';
+                micBtn.style.cursor = 'not-allowed';
+                tapFallback.style.display = 'inline-block';
+                return false;
+            }
+            return true;
+        }
+
+        function manualBlow() {
+            if (allBlown) return;
+            blowDetected(80);
+        }
+
+        window.addEventListener('DOMContentLoaded', checkMicAvailability);
+
+        // Create background stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            const size = Math.random() * 3 + 1;
+            star.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${Math.random() > 0.7 ? '#ffd700' : 'white'};
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                opacity: ${Math.random() * 0.8 + 0.2};
+                animation: starTwinkle ${Math.random() * 4 + 2}s infinite;
+                animation-delay: ${Math.random() * 3}s;
+                box-shadow: 0 0 ${size * 2}px ${Math.random() > 0.7 ? '#ffd700' : 'white'};
+            `;
+            starsContainer.appendChild(star);
+        }
+
+        // Create floating hearts
+        const heartsContainer = document.getElementById('floating-hearts');
+        const heartColors = ['#ff6b9d', '#ff1493', '#ffb6c1', '#ffd700'];
+        for (let i = 0; i < 15; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '♥';
+            heart.style.cssText = `
+                position: absolute;
+                font-size: ${Math.random() * 20 + 12}px;
+                color: ${heartColors[Math.floor(Math.random() * heartColors.length)]};
+                left: ${Math.random() * 100}%;
+                animation: heartFloat ${Math.random() * 8 + 10}s linear infinite;
+                animation-delay: ${Math.random() * 10}s;
+                opacity: 0.6;
+                text-shadow: 0 0 10px currentColor;
+            `;
+            heartsContainer.appendChild(heart);
+        }
+
+        async function toggleMic() {
+            if (!checkMicAvailability()) return;
+
+            const btn = document.getElementById('mic-btn');
+            const icon = document.getElementById('mic-icon');
+            const text = document.getElementById('mic-text');
+            const status = document.getElementById('mic-status');
+            const volContainer = document.getElementById('volume-bar-container');
+
+            if (isListening) {
+                stopListening();
+                btn.classList.remove('listening');
+                icon.textContent = '🎤';
+                text.textContent = 'Enable Microphone';
+                status.textContent = '';
+                volContainer.style.display = 'none';
+                return;
+            }
+
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                microphone = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                analyser.smoothingTimeConstant = 0.3;
+                microphone.connect(analyser);
+
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+
+                isListening = true;
+                btn.classList.add('listening');
+                icon.textContent = '🔴';
+                text.textContent = 'Listening... Blow!';
+                status.textContent = 'Blow strongly into your mic!';
+                status.style.color = '#00ff88';
+                volContainer.style.display = 'block';
+
+                detectBlow();
+            } catch (err) {
+                let msg = '❌ Microphone access denied. Please allow mic permission.';
+                if (err && err.name === 'NotFoundError') {
+                    msg = '❌ No microphone found on this device.';
+                } else if (err && err.name === 'NotAllowedError') {
+                    msg = '❌ Mic permission blocked. Check your browser/site settings and reload.';
+                }
+                status.textContent = msg;
+                status.style.color = '#ff4444';
+                document.getElementById('tap-fallback').style.display = 'inline-block';
+                console.error('Mic error:', err);
+            }
+        }
+
+        function stopListening() {
+            isListening = false;
+            if (animationId) cancelAnimationFrame(animationId);
+            if (microphone && microphone.mediaStream) {
+                microphone.mediaStream.getTracks().forEach(t => t.stop());
+            }
+            if (audioContext) audioContext.close();
+        }
+
+        function detectBlow() {
+            if (!isListening) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            let sum = 0;
+            let count = 0;
+            for (let i = 0; i < dataArray.length * 0.6; i++) {
+                sum += dataArray[i];
+                count++;
+            }
+            const average = sum / count;
+
+            const volBar = document.getElementById('volume-bar');
+            const volPercent = Math.min((average / 100) * 100, 100);
+            volBar.style.width = volPercent + '%';
+
+            if (average > blowThreshold && !cooldown && !allBlown) {
+                blowDetected(average);
+            }
+
+            animationId = requestAnimationFrame(detectBlow);
+        }
+
+        function blowDetected(intensity) {
+            cooldown = true;
+            blowCount++;
+            document.getElementById('blow-counter').textContent = `Blows needed: ${Math.max(0, maxBlows - blowCount)}`;
+
+            const status = document.getElementById('mic-status');
+            status.textContent = `💨 Blow ${blowCount} detected!`;
+            status.style.color = '#ffd700';
+
+            createSmoke();
+
+            const flames = document.querySelectorAll('.flame');
+            const windStrength = Math.min(intensity / 50, 1.5);
+            flames.forEach((flame, index) => {
+                if (flame.style.display !== 'none') {
+                    flame.style.animation = 'none';
+                    flame.style.transform = `scale(${0.5 + Math.random() * 0.2}) rotate(${20 + Math.random() * 15}deg) translateX(${8 * windStrength}px) skewX(${10 * windStrength}deg)`;
+                    flame.style.opacity = '0.6';
+
+                    setTimeout(() => {
+                        if (blowCount < maxBlows) {
+                            flame.style.animation = `flicker ${0.08 + index * 0.03}s infinite alternate`;
+                            flame.style.transform = 'scale(1) rotate(0deg) translateX(0) skewX(0)';
+                            flame.style.opacity = '1';
+                        }
+                    }, 500);
+                }
+            });
+
+            setTimeout(() => {
+                cooldown = false;
+            }, 1200);
+
+            if (blowCount >= maxBlows) {
+                allBlown = true;
+                setTimeout(() => {
+                    extinguishAllCandles();
+                }, 600);
+            }
+        }
+
+        function createSmoke() {
+            const smokeContainer = document.getElementById('smoke-container');
+            const activeFlames = document.querySelectorAll('.flame:not([style*="display: none"])');
+
+            activeFlames.forEach((flame) => {
+                for (let s = 0; s < 3; s++) {
+                    const smoke = document.createElement('div');
+                    const rect = flame.getBoundingClientRect();
+                    const containerRect = smokeContainer.getBoundingClientRect();
+
+                    smoke.style.cssText = `
+                        position: absolute;
+                        width: ${12 + Math.random() * 8}px;
+                        height: ${12 + Math.random() * 8}px;
+                        background: radial-gradient(circle, rgba(220,220,220,0.7) 0%, rgba(180,180,180,0.4) 40%, transparent 100%);
+                        border-radius: 50%;
+                        left: ${(rect.left - containerRect.left) + Math.random() * 15 - 7}px;
+                        top: ${(rect.top - containerRect.top) + Math.random() * 5}px;
+                        animation: smokeRise ${1.5 + Math.random()}s ease-out forwards;
+                        pointer-events: none;
+                    `;
+                    smokeContainer.appendChild(smoke);
+                    setTimeout(() => smoke.remove(), 3000);
+                }
+            });
+        }
+
+        function extinguishAllCandles() {
+            stopListening();
+
+            const btn = document.getElementById('mic-btn');
+            const status = document.getElementById('mic-status');
+            btn.style.display = 'none';
+            status.style.display = 'none';
+            document.getElementById('volume-bar-container').style.display = 'none';
+            document.getElementById('tap-fallback').style.display = 'none';
+            document.getElementById('insecure-banner').style.display = 'none';
+
+            const flames = document.querySelectorAll('.flame');
+            flames.forEach((flame, index) => {
+                setTimeout(() => {
+                    flame.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    flame.style.transform = 'scale(0) rotate(60deg) translateX(20px)';
+                    flame.style.opacity = '0';
+                    flame.style.filter = 'blur(2px)';
+                    setTimeout(() => {
+                        flame.style.display = 'none';
+                    }, 600);
+                }, index * 200);
+            });
+
+            for (let i = 0; i < 12; i++) {
+                setTimeout(createSmoke, i * 80);
+            }
+
+            setTimeout(() => {
+                document.getElementById('blow-counter').style.display = 'none';
+                document.getElementById('celebration').style.display = 'block';
+                launchConfetti();
+                launchHearts();
+            }, 1500);
+        }
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#ff6b9d', '#ffd700', '#ff69b4', '#00ced1', '#ff4500', '#9370db', '#32cd32', '#ff1493', '#ff8fab', '#daa520'];
+
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                const isSquare = Math.random() > 0.4;
+                const size = Math.random() * 8 + 4;
+                confetti.style.cssText = `
+                    position: absolute;
+                    width: ${isSquare ? size : size * 0.7}px;
+                    height: ${isSquare ? size : size * 1.2}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    left: ${Math.random() * 100}%;
+                    top: -20px;
+                    border-radius: ${isSquare ? '2px' : '50%'};
+                    animation: confettiFall ${Math.random() * 4 + 2}s linear forwards;
+                    animation-delay: ${Math.random() * 3}s;
+                    opacity: 0.95;
+                    box-shadow: 0 0 4px currentColor;
+                `;
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 7000);
+            }
+
+            const confettiInterval = setInterval(() => {
+                if (document.getElementById('celebration').style.display === 'none') {
+                    clearInterval(confettiInterval);
+                    return;
+                }
+                for (let j = 0; j < 3; j++) {
+                    const confetti = document.createElement('div');
+                    const colors2 = ['#ff6b9d', '#ffd700', '#ff69b4', '#00ced1', '#ff4500', '#ff1493'];
+                    confetti.style.cssText = `
+                        position: absolute;
+                        width: ${6 + Math.random() * 4}px;
+                        height: ${6 + Math.random() * 4}px;
+                        background: ${colors2[Math.floor(Math.random() * colors2.length)]};
+                        left: ${Math.random() * 100}%;
+                        top: -20px;
+                        border-radius: ${Math.random() > 0.5 ? '2px' : '50%'};
+                        animation: confettiFall ${Math.random() * 3 + 2}s linear forwards;
+                        opacity: 0.9;
+                        box-shadow: 0 0 3px currentColor;
+                    `;
+                    container.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 6000);
+                }
+            }, 200);
+        }
+
+        function launchHearts() {
+            const container = document.getElementById('confetti-container');
+            const heartColors = ['#ff6b9d', '#ff1493', '#ffb6c1', '#ffd700'];
+
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '♥';
+                heart.style.cssText = `
+                    position: absolute;
+                    font-size: ${20 + Math.random() * 20}px;
+                    color: ${heartColors[Math.floor(Math.random() * heartColors.length)]};
+                    left: ${Math.random() * 100}%;
+                    top: -30px;
+                    animation: heartFloat ${Math.random() * 4 + 3}s ease-out forwards;
+                    animation-delay: ${Math.random() * 2}s;
+                    opacity: 0.9;
+                    text-shadow: 0 0 15px currentColor;
+                    pointer-events: none;
+                `;
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 8000);
+            }
+        }
+    </script>
+</body>
+</html>
